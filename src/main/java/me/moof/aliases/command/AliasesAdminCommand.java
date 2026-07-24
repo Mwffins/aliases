@@ -86,6 +86,11 @@ public class AliasesAdminCommand {
     }
 
     private static int addAlias(CommandSourceStack source, String name, String target) {
+        if (ConfigManager.isCircular(name, target)) {
+            source.sendFailure(Component.literal("Cannot add alias /" + name + ": it creates a circular command loop!"));
+            return 0;
+        }
+
         boolean success = ConfigManager.addAlias(name, target, 2, "Custom alias");
         if (success) {
             syncCommandTrees(source.getServer());
